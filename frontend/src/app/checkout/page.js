@@ -3,17 +3,16 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCart } from '../../context/CartContext';
-import { useCustomer } from '../../context/CustomerContext';
-import { api } from '../../utils/api';
+import { api, getImageUrl } from '../../utils/api';
 import { CreditCard, CheckCircle2, ChevronRight, MessageSquare, Landmark, QrCode } from 'lucide-react';
 
 export default function Checkout() {
   const router = useRouter();
   const { cartItems, getTotal, promoCode, discount, clearCart } = useCart();
-  const { customerUser, isLoggedIn, loading } = useCustomer();
 
   const [formData, setFormData] = useState({
     customerName: '',
+    email: '',
     whatsapp: '',
     address: '',
     notes: '',
@@ -24,22 +23,7 @@ export default function Checkout() {
   const [errorMsg, setErrorMsg] = useState('');
   const [createdOrder, setCreatedOrder] = useState(null);
 
-  // Checkout Authentication Guard
-  useEffect(() => {
-    if (!loading && !isLoggedIn) {
-      router.push('/login?redirect=/checkout');
-    }
-  }, [isLoggedIn, loading, router]);
-
-  // Prefill Customer Name
-  useEffect(() => {
-    if (customerUser) {
-      setFormData((prev) => ({
-        ...prev,
-        customerName: customerUser.name,
-      }));
-    }
-  }, [customerUser]);
+  // Public Guest checkout, no login restrictions needed
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('id-ID', {
@@ -58,8 +42,8 @@ export default function Checkout() {
     e.preventDefault();
     setErrorMsg('');
     
-    if (!formData.customerName || !formData.whatsapp || !formData.address) {
-      setErrorMsg('Nama lengkap, WhatsApp, dan Alamat lengkap harus diisi.');
+    if (!formData.customerName || !formData.email || !formData.whatsapp || !formData.address) {
+      setErrorMsg('Nama lengkap, Email, WhatsApp, dan Alamat lengkap harus diisi.');
       return;
     }
 
@@ -75,6 +59,7 @@ export default function Checkout() {
     try {
       const payload = {
         customerName: formData.customerName,
+        email: formData.email,
         whatsapp: formData.whatsapp,
         address: formData.address,
         notes: formData.notes,
@@ -123,13 +108,7 @@ export default function Checkout() {
 
   const total = getTotal();
 
-  if (loading) {
-    return (
-      <div className="max-w-xl mx-auto px-4 py-20 text-center text-muted animate-pulse">
-        Memuat Halaman Pembayaran...
-      </div>
-    );
-  }
+  // Public checkout, loading state removed
 
   // If order was successfully created, show completion screen
   if (createdOrder) {
@@ -142,6 +121,7 @@ export default function Checkout() {
         <div className="space-y-2">
           <h1 className="text-2xl font-serif font-bold text-foreground">Pesanan Berhasil Dibuat!</h1>
           <p className="text-xs text-muted">ID Pesanan Anda: <span className="font-semibold text-brand-brown-dark font-mono text-sm">#{createdOrder.id}</span></p>
+          <p className="text-3xs text-muted">Invoice rincian pesanan telah dikirimkan secara otomatis ke email <span className="font-semibold text-brand-brown-dark">${formData.email}</span></p>
         </div>
 
         <div className="bg-card border border-border p-6 rounded-2xl text-left space-y-4">
@@ -186,8 +166,18 @@ export default function Checkout() {
           >
             <span>Hubungi Via WhatsApp</span>
           </a>
+          {createdOrder.invoiceUrl && (
+            <a
+              href={getImageUrl(createdOrder.invoiceUrl)}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center bg-brand-pink hover:bg-brand-pink/90 text-white font-medium px-6 py-2.5 rounded-xl transition-all"
+            >
+              <span>Lihat Invoice HTML</span>
+            </a>
+          )}
           <Link
-            href={`/tracking?whatsapp=${createdOrder.whatsapp}`}
+            href={`/tracking?orderId=${createdOrder.id}`}
             className="inline-flex items-center justify-center border-2 border-brand-brown-dark/30 hover:border-brand-brown-dark text-brand-brown-dark font-medium px-6 py-2.5 rounded-xl transition-all"
           >
             <span>Lacak Status Pesanan</span>
@@ -240,6 +230,22 @@ export default function Checkout() {
                 className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand-pink transition-all text-foreground font-normal"
                 required
               />
+            </div>
+
+            {/* Email */}
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="block text-brand-brown-dark">Alamat Email *</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="cth. customer@email.com"
+                value={formData.email}
+                onChange={handleInputChange}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand-pink transition-all text-foreground font-normal"
+                required
+              />
+              <span className="block text-3xs text-muted font-normal mt-0.5">Invoice rincian pesanan akan dikirimkan secara otomatis ke email ini.</span>
             </div>
 
             {/* WhatsApp */}

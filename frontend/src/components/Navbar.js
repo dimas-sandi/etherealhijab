@@ -5,8 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useTheme } from '../context/ThemeContext';
-import { useCustomer } from '../context/CustomerContext';
-import { Menu, X, ShoppingBag, Heart, Sun, Moon, User, LogOut } from 'lucide-react';
+import { Menu, X, ShoppingBag, Heart, Sun, Moon } from 'lucide-react';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -14,8 +13,6 @@ export default function Navbar() {
   const { cartItems } = useCart();
   const { wishlistItems } = useWishlist();
   const { darkMode, toggleDarkMode } = useTheme();
-  const { customerUser, isLoggedIn, logoutCustomer } = useCustomer();
-
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const wishlistCount = wishlistItems.length;
 
@@ -98,37 +95,6 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
-
-            {/* Customer Auth Greeting & Logout */}
-            {isLoggedIn ? (
-              <div className="flex items-center space-x-1.5 sm:space-x-2">
-                <Link
-                  href="/profile"
-                  className="p-2 rounded-full hover:bg-brand-beige dark:hover:bg-brand-beige-dark transition-colors"
-                  title="Profil Saya"
-                >
-                  <User className="w-5 h-5 text-brand-brown-dark" />
-                </Link>
-                <span className="text-2xs text-brand-brown-dark hidden lg:inline font-semibold">
-                  Hai, {customerUser?.name.split(' ')[0]}
-                </span>
-                <button
-                  onClick={logoutCustomer}
-                  className="p-1.5 rounded-full hover:bg-brand-beige dark:hover:bg-brand-beige-dark text-red-500 transition-colors"
-                  title="Logout Pelanggan"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <Link
-                href="/login"
-                className="text-2xs font-semibold px-2.5 py-1.5 border border-brand-brown-dark/30 hover:bg-brand-brown-dark/5 rounded-xl text-brand-brown-dark transition-colors"
-                title="Masuk Akun"
-              >
-                Masuk
-              </Link>
-            )}
 
             {/* Hamburger Button */}
             <div className="md:hidden">

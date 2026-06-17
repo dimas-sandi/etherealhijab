@@ -47,6 +47,7 @@ model Order {
   customerId     Int?
   customer       Customer?   @relation(fields: [customerId], references: [id])
   customerName   String
+  email          String
   whatsapp       String
   address        String      
   totalAmount    Float

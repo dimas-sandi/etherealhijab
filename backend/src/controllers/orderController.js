@@ -5,28 +5,10 @@ const prisma = new PrismaClient();
 // Create new order (public checkout)
 exports.createOrder = async (req, res) => {
   try {
-    const { customerName, whatsapp, address, items, notes, paymentMethod, promoCode } = req.body;
+    const { customerName, email, whatsapp, address, items, notes, paymentMethod, promoCode } = req.body;
 
-    if (!customerName || !whatsapp || !address || !items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: 'Customer information and items are required' });
-    }
-
-    // Verify Customer token
-    const authHeader = req.headers['authorization'];
-    if (!authHeader) {
-      return res.status(401).json({ error: 'Anda harus masuk (login) terlebih dahulu untuk membuat pesanan.' });
-    }
-    const token = authHeader.split(' ')[1];
-    let customerId = null;
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'ethereal_hijab_secret_key_123456');
-      if (decoded.role === 'CUSTOMER') {
-        customerId = decoded.id;
-      } else {
-        return res.status(403).json({ error: 'Akses ditolak. Akun admin tidak dapat melakukan pembelian.' });
-      }
-    } catch (err) {
-      return res.status(401).json({ error: 'Sesi masuk Anda telah kedaluwarsa. Silakan masuk kembali.' });
+    if (!customerName || !email || !whatsapp || !address || !items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'Customer name, email, WhatsApp, address, and items are required' });
     }
 
     // Run transaction
@@ -74,8 +56,9 @@ exports.createOrder = async (req, res) => {
       // Create Order
       const order = await tx.order.create({
         data: {
-          customerId,
+          customerId: null,
           customerName,
+          email,
           whatsapp,
           address,
           totalAmount,
@@ -99,18 +82,24 @@ exports.createOrder = async (req, res) => {
       return order;
     });
 
+    // Generate and send HTML invoice
+    const emailService = require('../services/emailService');
+    const invoiceUrl = await emailService.sendInvoiceEmail(newOrder);
+
     // Mock Email/WhatsApp Notification
     console.log('==================================================');
     console.log(`NOTIFICATION: New Order Placed! ID: #${newOrder.id}`);
-    console.log(`To: Admin (etherealhijab@gmail.com) & Customer WhatsApp (${newOrder.whatsapp})`);
+    console.log(`To: Admin (etherealhijab@gmail.com) & Customer WhatsApp (${newOrder.whatsapp}) & Email (${newOrder.email})`);
     console.log(`Customer: ${newOrder.customerName}`);
     console.log(`Total Payment: IDR ${newOrder.totalAmount.toLocaleString()}`);
     console.log(`Payment Method: ${newOrder.paymentMethod}`);
+    console.log(`Invoice Static URL: ${invoiceUrl}`);
     console.log('==================================================');
 
     res.status(201).json({
       message: 'Order created successfully',
       order: newOrder,
+      invoiceUrl: invoiceUrl || null,
     });
   } catch (err) {
     console.error('Order creation transaction failed:', err);

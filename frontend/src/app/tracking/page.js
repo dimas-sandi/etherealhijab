@@ -7,8 +7,9 @@ import { Search, MapPin, Truck, Calendar, ShoppingBag, Landmark, Info } from 'lu
 function TrackingContent() {
   const searchParams = useSearchParams();
   const whatsappQuery = searchParams.get('whatsapp');
+  const orderIdQuery = searchParams.get('orderId');
 
-  const [inputVal, setInputVal] = useState(whatsappQuery || '');
+  const [inputVal, setInputVal] = useState(orderIdQuery || whatsappQuery || '');
   const [orders, setOrders] = useState([]);
   const [singleOrder, setSingleOrder] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -16,10 +17,11 @@ function TrackingContent() {
   const [searched, setSearched] = useState(false);
 
   useEffect(() => {
-    if (whatsappQuery) {
-      handleSearch(null, whatsappQuery);
+    const query = orderIdQuery || whatsappQuery;
+    if (query) {
+      handleSearch(null, query);
     }
-  }, [whatsappQuery]);
+  }, [orderIdQuery, whatsappQuery]);
 
   const handleSearch = async (e, directVal) => {
     if (e) e.preventDefault();

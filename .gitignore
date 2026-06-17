@@ -30,3 +30,7 @@ Thumbs.db
 # IDE settings
 .vscode/
 .idea/
+
+# Uploaded product files and invoices
+backend/uploads/
+
