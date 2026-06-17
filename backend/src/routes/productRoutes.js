@@ -4,6 +4,7 @@ const productController = require('../controllers/productController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 router.get('/', productController.getProducts);
+router.post('/upload', authMiddleware, productController.uploadImage);
 router.get('/:id', productController.getProductById);
 router.post('/', authMiddleware, productController.createProduct);
 router.put('/:id', authMiddleware, productController.updateProduct);

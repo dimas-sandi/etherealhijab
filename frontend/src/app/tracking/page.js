@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { api } from '../../utils/api';
+import { api, getImageUrl } from '../../utils/api';
 import { Search, MapPin, Truck, Calendar, ShoppingBag, Landmark, Info } from 'lucide-react';
 
 function TrackingContent() {
@@ -260,7 +260,7 @@ function TrackingContent() {
                 <div key={item.id} className="p-4 flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <img 
-                      src={item.product.imageUrl} 
+                      src={getImageUrl(item.product.imageUrl)} 
                       alt={item.product.name} 
                       className="w-10 h-12 rounded object-cover shrink-0 bg-brand-beige"
                     />

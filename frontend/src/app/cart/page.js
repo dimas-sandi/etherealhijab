@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '../../context/CartContext';
 import { Trash2, ShoppingBag, Plus, Minus, ArrowRight, Sparkles } from 'lucide-react';
+import { getImageUrl } from '../../utils/api';
 
 export default function Cart() {
   const {
@@ -84,7 +85,7 @@ export default function Cart() {
               {/* Product Image */}
               <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-lg overflow-hidden shrink-0 bg-brand-beige relative">
                 <img
-                  src={item.product.imageUrl || 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&q=80&w=300'}
+                  src={getImageUrl(item.product.imageUrl)}
                   alt={item.product.name}
                   className="w-full h-full object-cover"
                 />

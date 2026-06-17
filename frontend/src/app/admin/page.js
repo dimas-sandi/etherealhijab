@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '../../utils/api';
+import { api, getImageUrl } from '../../utils/api';
 import AdminSidebar from '../../components/AdminSidebar';
 import {
   Chart as ChartJS,
@@ -68,6 +68,37 @@ export default function AdminDashboard() {
 
   // Tracking Number State
   const [trackingInputs, setTrackingInputs] = useState({});
+
+  // File Upload State & Handler
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Ukuran file maksimal adalah 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      try {
+        setUploadingImage(true);
+        const base64Data = reader.result;
+        const response = await api.uploadImage(base64Data);
+        setProductForm(prev => ({
+          ...prev,
+          imageUrl: response.imageUrl
+        }));
+      } catch (err) {
+        alert(err.message || 'Gagal mengunggah gambar.');
+      } finally {
+        setUploadingImage(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Auth Protection Check
   useEffect(() => {
@@ -490,7 +521,7 @@ export default function AdminDashboard() {
                       {products.map((prod) => (
                         <tr key={prod.id} className="hover:bg-brand-beige/10">
                           <td className="p-4 flex items-center space-x-3 text-foreground font-medium">
-                            <img src={prod.imageUrl || 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&q=80&w=150'} alt="" className="w-10 h-10 object-cover rounded-lg bg-brand-beige shrink-0" />
+                            <img src={getImageUrl(prod.imageUrl)} alt="" className="w-10 h-10 object-cover rounded-lg bg-brand-beige shrink-0" />
                             <span>{prod.name}</span>
                           </td>
                           <td className="p-4">{prod.category}</td>
@@ -753,15 +784,40 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              {/* Image URL */}
-              <div className="space-y-1">
-                <label>URL Gambar Produk</label>
+              {/* Image Upload & Preview */}
+              <div className="space-y-2">
+                <label className="block">Gambar Produk *</label>
+                <div className="flex items-center space-x-4">
+                  {/* Preview */}
+                  <div className="w-16 h-16 rounded-xl bg-brand-beige border border-border flex items-center justify-center overflow-hidden shrink-0">
+                    {productForm.imageUrl ? (
+                      <img src={getImageUrl(productForm.imageUrl)} alt="Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-3xs text-muted font-normal">No Image</span>
+                    )}
+                  </div>
+                  {/* File input wrapper */}
+                  <div className="flex-grow">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="product-image-upload"
+                      disabled={uploadingImage}
+                    />
+                    <label
+                      htmlFor="product-image-upload"
+                      className="inline-flex items-center justify-center border border-border bg-background hover:bg-brand-beige/25 hover:text-brand-brown-dark text-brand-brown-dark font-semibold px-4 py-2.5 rounded-xl cursor-pointer text-xs transition-colors"
+                    >
+                      {uploadingImage ? 'Mengunggah...' : 'Pilih File Gambar'}
+                    </label>
+                    <span className="block text-3xs text-muted mt-1 font-normal">Format: JPG, PNG, WEBP (Maks. 5MB)</span>
+                  </div>
+                </div>
                 <input
-                  type="url"
-                  placeholder="https://images.unsplash.com/..."
+                  type="hidden"
                   value={productForm.imageUrl}
-                  onChange={(e) => setProductForm({ ...productForm, imageUrl: e.target.value })}
-                  className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs focus:outline-none font-normal text-foreground"
                 />
               </div>
 

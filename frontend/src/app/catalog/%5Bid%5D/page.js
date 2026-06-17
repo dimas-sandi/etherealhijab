@@ -2,7 +2,7 @@
 import { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { api } from '../../../utils/api';
+import { api, getImageUrl } from '../../../utils/api';
 import { useCart } from '../../../context/CartContext';
 import { useWishlist } from '../../../context/WishlistContext';
 import { Heart, ShoppingBag, ArrowLeft, ShieldCheck, CheckCircle2 } from 'lucide-react';
@@ -121,7 +121,7 @@ export default function ProductDetail({ params }) {
         {/* Left Col - Image */}
         <div className="relative aspect-[4/5] bg-brand-beige rounded-2xl overflow-hidden shadow-sm">
           <img
-            src={product.imageUrl || 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&q=80&w=800'}
+            src={getImageUrl(product.imageUrl)}
             alt={product.name}
             className="absolute inset-0 w-full h-full object-cover"
           />

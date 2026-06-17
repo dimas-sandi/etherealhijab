@@ -14,7 +14,12 @@ const app = express();
 app.use(cors());
 
 // Parse incoming JSON payloads
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// Serve static uploaded files
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Map API Route Endpoints
 app.use('/api/auth', authRoutes);

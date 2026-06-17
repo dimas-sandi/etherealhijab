@@ -83,6 +83,11 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  uploadImage: (image) =>
+    request('/products/upload', {
+      method: 'POST',
+      body: JSON.stringify({ image }),
+    }),
   updateProduct: (id, data) => 
     request(`/products/${id}`, {
       method: 'PUT',
@@ -126,4 +131,15 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+};
+
+export const getImageUrl = (url) => {
+  if (!url) return 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&q=80&w=300';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  const backendHost = process.env.NEXT_PUBLIC_API_URL 
+    ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') 
+    : 'http://localhost:5000';
+  return `${backendHost}${url}`;
 };

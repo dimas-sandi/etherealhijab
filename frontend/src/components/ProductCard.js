@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { Heart, ShoppingCart } from 'lucide-react';
+import { getImageUrl } from '../utils/api';
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
@@ -32,7 +33,7 @@ export default function ProductCard({ product }) {
       {/* Product Image */}
       <Link href={`/catalog/${product.id}`} className="block overflow-hidden relative pt-[125%] bg-brand-beige">
         <img
-          src={product.imageUrl || 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&q=80&w=600'}
+          src={getImageUrl(product.imageUrl)}
           alt={product.name}
           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"

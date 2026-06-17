@@ -159,3 +159,50 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete product' });
   }
 };
+
+// Upload product image (Admin)
+exports.uploadImage = async (req, res) => {
+  try {
+    if (req.user?.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Akses ditolak. Hanya untuk administrator.' });
+    }
+
+    const { image } = req.body;
+    if (!image) {
+      return res.status(400).json({ error: 'Data gambar wajib disertakan.' });
+    }
+
+    // Check if base64 format is valid
+    const matches = image.match(/^data:image\/([A-Za-z\-+]+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) {
+      return res.status(400).json({ error: 'Format gambar tidak valid. Harus base64.' });
+    }
+
+    const imageExtension = matches[1];
+    const imageBuffer = Buffer.from(matches[2], 'base64');
+
+    // Limit size to 5MB
+    if (imageBuffer.length > 5 * 1024 * 1024) {
+      return res.status(400).json({ error: 'Ukuran gambar maksimal 5MB.' });
+    }
+
+    const fs = require('fs');
+    const path = require('path');
+    const filename = `product-${Date.now()}.${imageExtension}`;
+    const uploadDir = path.join(__dirname, '../../uploads');
+
+    // Create uploads directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const filePath = path.join(uploadDir, filename);
+    fs.writeFileSync(filePath, imageBuffer);
+
+    const publicUrl = `/uploads/${filename}`;
+    res.json({ imageUrl: publicUrl });
+  } catch (err) {
+    console.error('Upload error:', err);
+    res.status(500).json({ error: 'Gagal mengunggah gambar.' });
+  }
+};
