@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-brand-beige: var(--primary-beige);
+  --color-brand-beige-dark: var(--primary-beige-dark);
+  --color-brand-brown: var(--primary-brown);
+  --color-brand-brown-dark: var(--primary-brown-dark);
+  --color-brand-pink-light: var(--accent-pink-light);
+  --color-brand-pink: var(--accent-pink);
+  --color-brand-pink-dark: var(--accent-pink-dark);
+  --color-card: var(--card-bg);
+  --color-border: var(--border-color);
+  --color-muted: var(--muted-text);
+  
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-slide-up: slide-up 0.4s ease-out;
+  
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+}
+
+:root {
+  --background: #fdfbf7;
+  --foreground: #2d2621;
+  --primary-beige: #f5ebe0;
+  --primary-beige-dark: #e3d5ca;
+  --primary-brown: #d5bdaf;
+  --primary-brown-dark: #7d6556;
+  --accent-pink-light: #fcd5ce;
+  --accent-pink: #ffb5a7;
+  --accent-pink-dark: #e0978b;
+  --card-bg: #ffffff;
+  --border-color: #f0e6df;
+  --muted-text: #70645c;
+}
+
+.dark {
+  --background: #161210;
+  --foreground: #f5ebe0;
+  --primary-beige: #241d1a;
+  --primary-beige-dark: #362c27;
+  --primary-brown: #483c36;
+  --primary-brown-dark: #cfa890;
+  --accent-pink-light: #301a18;
+  --accent-pink: #f7a494;
+  --accent-pink-dark: #fcd5ce;
+  --card-bg: #1d1815;
+  --border-color: #2b231f;
+  --muted-text: #a6958b;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--primary-brown);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-brown-dark);
+}

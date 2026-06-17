@@ -1,0 +1,93 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  role         String   @default("ADMIN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Product {
+  id          Int         @id @default(autoincrement())
+  name        String
+  price       Float
+  description String      
+  material    String
+  stock       Int
+  colors      String      // Store as comma-separated values, e.g. "Beige, Soft Pink, Coklat"
+  imageUrl    String      
+  category    String      // Voal, Pashmina, Bergo, Inner, Accessories
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  OrderItem   OrderItem[]
+}
+
+model Customer {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String?
+  name         String
+  provider     String   @default("CREDENTIALS") // "CREDENTIALS", "GOOGLE"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  orders       Order[]
+}
+
+model Order {
+  id             Int         @id @default(autoincrement())
+  customerId     Int?
+  customer       Customer?   @relation(fields: [customerId], references: [id])
+  customerName   String
+  whatsapp       String
+  address        String      
+  totalAmount    Float
+  notes          String?     
+  paymentMethod  String      // "WhatsApp Checkout", "Bank Transfer", "QRIS"
+  status         String      @default("PENDING") // PENDING, PROCESSED, SHIPPED, COMPLETED
+  trackingNumber String?
+  promoCode      String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  items          OrderItem[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+}
+
+model CustomerData {
+  id         Int      @id @default(autoincrement())
+  name       String
+  age        Int
+  gender     String
+  city       String
+  preference String   // Favorite hijab type
+  budget     String   // Budget per purchase
+  frequency  String   // Shopping frequency per month
+  createdAt  DateTime @default(now())
+}
+
+model Testimonial {
+  id        Int      @id @default(autoincrement())
+  name      String
+  review    String   
+  rating    Int
+  imageUrl  String   
+  role      String?
+  createdAt DateTime @default(now())
+}
