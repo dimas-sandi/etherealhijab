@@ -13,6 +13,7 @@ export default function Checkout() {
   const [formData, setFormData] = useState({
     customerName: '',
     email: '',
+    city: '',
     whatsapp: '',
     address: '',
     notes: '',
@@ -42,8 +43,8 @@ export default function Checkout() {
     e.preventDefault();
     setErrorMsg('');
     
-    if (!formData.customerName || !formData.email || !formData.whatsapp || !formData.address) {
-      setErrorMsg('Nama lengkap, Email, WhatsApp, dan Alamat lengkap harus diisi.');
+    if (!formData.customerName || !formData.email || !formData.city || !formData.whatsapp || !formData.address) {
+      setErrorMsg('Nama lengkap, Email, Kota/Kabupaten, WhatsApp, dan Alamat lengkap harus diisi.');
       return;
     }
 
@@ -62,6 +63,7 @@ export default function Checkout() {
         email: formData.email,
         whatsapp: formData.whatsapp,
         address: formData.address,
+        city: formData.city,
         notes: formData.notes,
         paymentMethod: formData.paymentMethod,
         promoCode: promoCode || null,
@@ -246,6 +248,21 @@ export default function Checkout() {
                 required
               />
               <span className="block text-3xs text-muted font-normal mt-0.5">Invoice rincian pesanan akan dikirimkan secara otomatis ke email ini.</span>
+            </div>
+
+            {/* Kota / Kabupaten */}
+            <div className="space-y-1.5">
+              <label htmlFor="city" className="block text-brand-brown-dark">Kota / Kabupaten *</label>
+              <input
+                type="text"
+                id="city"
+                name="city"
+                placeholder="cth. Bandung"
+                value={formData.city}
+                onChange={handleInputChange}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand-pink transition-all text-foreground font-normal"
+                required
+              />
             </div>
 
             {/* WhatsApp */}
