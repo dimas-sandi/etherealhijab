@@ -8,6 +8,7 @@ router.get('/track', orderController.trackOrderByWhatsapp);
 router.get('/stats', authMiddleware, orderController.getSalesStats);
 router.get('/', authMiddleware, orderController.getOrders);
 router.get('/my-orders', authMiddleware, orderController.getMyOrders);
+router.get('/export-excel', authMiddleware, orderController.exportFinancialExcel);
 router.get('/:id', orderController.getOrderById);
 router.put('/:id/status', authMiddleware, orderController.updateOrderStatus);
 

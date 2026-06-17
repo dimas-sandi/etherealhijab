@@ -348,6 +348,30 @@ export default function AdminDashboard() {
     document.body.removeChild(link);
   };
 
+  const handleDownloadFinancialExcel = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('http://localhost:5000/api/orders/export-excel', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Gagal mengunduh file Excel');
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'DATA_KEUANGAN_ETHEREAL_HIJAB.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (err) {
+      alert(err.message || 'Gagal mengunduh file Excel.');
+    }
+  };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -554,13 +578,22 @@ export default function AdminDashboard() {
                 <h1 className="text-2xl font-serif font-bold text-foreground">Daftar Transaksi Masuk</h1>
                 <p className="text-xs text-muted">Ubah status pesanan, input nomor resi pengiriman, atau ekspor data.</p>
               </div>
-              <button
-                onClick={() => exportToCSV('orders')}
-                className="bg-brand-brown-dark hover:bg-brand-brown-dark/95 text-white text-xs px-4 py-2.5 rounded-xl font-semibold flex items-center space-x-1.5 shadow-sm shrink-0 self-start sm:self-auto"
-              >
-                <Download className="w-4 h-4" />
-                <span>Ekspor ke CSV</span>
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleDownloadFinancialExcel}
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-4 py-2.5 rounded-xl font-semibold flex items-center space-x-1.5 shadow-sm shrink-0 self-start sm:self-auto"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Unduh SKB Excel</span>
+                </button>
+                <button
+                  onClick={() => exportToCSV('orders')}
+                  className="bg-brand-brown-dark hover:bg-brand-brown-dark/95 text-white text-xs px-4 py-2.5 rounded-xl font-semibold flex items-center space-x-1.5 shadow-sm shrink-0 self-start sm:self-auto"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Ekspor ke CSV</span>
+                </button>
+              </div>
             </div>
 
             {loadingData ? (

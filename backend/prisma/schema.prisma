@@ -43,14 +43,16 @@ model Customer {
 }
 
 model Order {
-  id             Int         @id @default(autoincrement())
+  id             String      @id
   customerId     Int?
   customer       Customer?   @relation(fields: [customerId], references: [id])
   customerName   String
   email          String
   whatsapp       String
   address        String      
+  city           String?
   totalAmount    Float
+  discountAmount Float       @default(0)
   notes          String?     
   paymentMethod  String      // "WhatsApp Checkout", "Bank Transfer", "QRIS"
   status         String      @default("PENDING") // PENDING, PROCESSED, SHIPPED, COMPLETED
@@ -63,12 +65,13 @@ model Order {
 
 model OrderItem {
   id        Int     @id @default(autoincrement())
-  orderId   Int
+  orderId   String
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId Int
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   price     Float
+  color     String?
 }
 
 model CustomerData {

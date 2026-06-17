@@ -81,13 +81,15 @@ CREATE TABLE `Customer` (
 -- ------------------------------------------
 DROP TABLE IF EXISTS `Order`;
 CREATE TABLE `Order` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` VARCHAR(191) NOT NULL,
     `customerId` INTEGER NULL,
     `customerName` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `whatsapp` VARCHAR(191) NOT NULL,
     `address` TEXT NOT NULL,
+    `city` VARCHAR(191) NULL,
     `totalAmount` DOUBLE NOT NULL,
+    `discountAmount` DOUBLE NOT NULL DEFAULT 0,
     `notes` TEXT NULL,
     `paymentMethod` VARCHAR(191) NOT NULL,
     `status` VARCHAR(191) NOT NULL DEFAULT 'PENDING',
@@ -106,10 +108,11 @@ CREATE TABLE `Order` (
 DROP TABLE IF EXISTS `OrderItem`;
 CREATE TABLE `OrderItem` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `orderId` INTEGER NOT NULL,
+    `orderId` VARCHAR(191) NOT NULL,
     `productId` INTEGER NOT NULL,
     `quantity` INTEGER NOT NULL,
     `price` DOUBLE NOT NULL,
+    `color` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

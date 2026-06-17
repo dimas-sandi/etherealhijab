@@ -36,11 +36,12 @@ function TrackingContent() {
     setLoading(true);
 
     try {
-      // If query is digits only, it might be an Order ID
-      const isOrderId = /^\d+$/.test(query);
+      const normalizedQuery = query.trim().toUpperCase();
+      // If query starts with 'ETH-' or contains non-digits, treat it as an Order ID
+      const isOrderId = normalizedQuery.startsWith('ETH-') || (!/^\d+$/.test(normalizedQuery) && normalizedQuery.length > 5);
 
       if (isOrderId) {
-        const order = await api.getOrderById(parseInt(query));
+        const order = await api.getOrderById(normalizedQuery);
         setSingleOrder(order);
       } else {
         // Query by WhatsApp
@@ -145,7 +146,7 @@ function TrackingContent() {
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-serif font-bold text-foreground">Lacak Status Pesanan</h1>
         <p className="text-sm text-muted">
-          Masukkan ID Pesanan (cth. 1) atau Nomor WhatsApp untuk memeriksa status pengiriman hijab Anda.
+          Masukkan ID Pesanan (cth. ETH-260617-K7P9X) atau Nomor WhatsApp untuk memeriksa status pengiriman hijab Anda.
         </p>
       </div>
 
@@ -154,7 +155,7 @@ function TrackingContent() {
         <div className="relative flex-1">
           <input
             type="text"
-            placeholder="cth. 081234567890 atau ID Order: 1"
+            placeholder="cth. 081234567890 atau ID Order: ETH-260617-K7P9X"
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-brand-pink transition-all"
