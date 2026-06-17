@@ -102,6 +102,13 @@ export default function Navbar() {
             {/* Customer Auth Greeting & Logout */}
             {isLoggedIn ? (
               <div className="flex items-center space-x-1.5 sm:space-x-2">
+                <Link
+                  href="/profile"
+                  className="p-2 rounded-full hover:bg-brand-beige dark:hover:bg-brand-beige-dark transition-colors"
+                  title="Profil Saya"
+                >
+                  <User className="w-5 h-5 text-brand-brown-dark" />
+                </Link>
                 <span className="text-2xs text-brand-brown-dark hidden lg:inline font-semibold">
                   Hai, {customerUser?.name.split(' ')[0]}
                 </span>
@@ -122,16 +129,6 @@ export default function Navbar() {
                 Masuk
               </Link>
             )}
-
-            {/* Admin Dashboard Entry */}
-            <Link
-              href="/admin"
-              className="p-2 rounded-full hover:bg-brand-beige dark:hover:bg-brand-beige-dark transition-colors"
-              aria-label="Admin Dashboard"
-              title="Portal Admin"
-            >
-              <User className="w-5 h-5 text-brand-brown-dark" />
-            </Link>
 
             {/* Hamburger Button */}
             <div className="md:hidden">

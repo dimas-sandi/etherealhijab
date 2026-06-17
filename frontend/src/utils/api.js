@@ -94,6 +94,7 @@ export const api = {
       body: JSON.stringify(data),
     }),
   getOrders: () => request('/orders'),
+  getMyOrders: () => request('/orders/my-orders'),
   getOrderById: (id) => request(`/orders/${id}`),
   trackOrderByWhatsapp: (whatsapp) => request(`/orders/track?whatsapp=${encodeURIComponent(whatsapp)}`),
   updateOrderStatus: (id, data) => 

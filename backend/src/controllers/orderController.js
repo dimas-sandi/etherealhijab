@@ -296,3 +296,28 @@ exports.getSalesStats = async (req, res) => {
     res.status(500).json({ error: 'Failed to compile sales stats' });
   }
 };
+
+// Get logged-in customer's orders
+exports.getMyOrders = async (req, res) => {
+  try {
+    if (req.user.role !== 'CUSTOMER') {
+      return res.status(403).json({ error: 'Akses ditolak. Hanya untuk pelanggan.' });
+    }
+    const customerId = req.user.id;
+    const orders = await prisma.order.findMany({
+      where: { customerId },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json(orders);
+  } catch (err) {
+    console.error('Error fetching customer orders:', err);
+    res.status(500).json({ error: 'Gagal mengambil data pesanan' });
+  }
+};
