@@ -63,6 +63,10 @@ exports.getProductById = async (req, res) => {
 // Create product (Admin)
 exports.createProduct = async (req, res) => {
   try {
+    if (req.user?.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Akses ditolak. Hanya untuk administrator.' });
+    }
+
     const { name, price, description, material, stock, colors, imageUrl, category } = req.body;
 
     if (!name || !price || !category || stock === undefined) {
@@ -92,6 +96,10 @@ exports.createProduct = async (req, res) => {
 // Update product (Admin)
 exports.updateProduct = async (req, res) => {
   try {
+    if (req.user?.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Akses ditolak. Hanya untuk administrator.' });
+    }
+
     const { id } = req.params;
     const { name, price, description, material, stock, colors, imageUrl, category } = req.body;
 
@@ -127,6 +135,10 @@ exports.updateProduct = async (req, res) => {
 // Delete product (Admin)
 exports.deleteProduct = async (req, res) => {
   try {
+    if (req.user?.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Akses ditolak. Hanya untuk administrator.' });
+    }
+
     const { id } = req.params;
 
     const existingProduct = await prisma.product.findUnique({

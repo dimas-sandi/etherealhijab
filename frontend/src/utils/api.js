@@ -1,10 +1,16 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 async function request(endpoint, options = {}) {
-  // Retrieve token from localStorage if client side
-  const token = typeof window !== 'undefined' 
-    ? (localStorage.getItem('customer_token') || localStorage.getItem('admin_token'))
-    : null;
+  // Retrieve token from localStorage prioritizing based on page pathname
+  let token = null;
+  if (typeof window !== 'undefined') {
+    const isAdminPath = window.location.pathname.startsWith('/admin');
+    if (isAdminPath) {
+      token = localStorage.getItem('admin_token') || localStorage.getItem('customer_token');
+    } else {
+      token = localStorage.getItem('customer_token') || localStorage.getItem('admin_token');
+    }
+  }
   
   const headers = {
     'Content-Type': 'application/json',
